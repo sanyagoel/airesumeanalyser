@@ -23,7 +23,7 @@ class baseAgent():
     
     def query_ollama(self,prompt : str):
         
-        response = self.client.run(agent = self.name, messages  = [{
+        response = self.client.run(agent = self.swarm, messages  = [{
             "role":"user",
             "content" : prompt
         }])
