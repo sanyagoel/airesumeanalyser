@@ -29,6 +29,7 @@ An end-to-end intelligent recruitment assistant that automates resume parsing, j
 - **Swarm Framework** for agent creation and orchestration
 - **LangChain** (with **community loader** for PDF parsing)
 - **Ollama** (using **locally downloaded LLaMA model** instead of OpenAI)
+- **MongoDB Atlas** (For **storing, and retrieving job data** for matching with resumes)
 - **Modular Agent System** (`baseAgent`, `orchestrator`, etc.)
 
 ---
