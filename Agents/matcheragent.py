@@ -24,7 +24,7 @@ class matcherAgent(baseAgent):
             
         )
     
-     def run(self,messages : list):
+     async def run(self,messages : list):
         
         content = messages[-1].get("content")
         
@@ -64,7 +64,8 @@ class matcherAgent(baseAgent):
                 
                 "matched_jobs" : scored_jobs2[:3],
                 "number_of_matches" : len(scored_jobs),
-                "user_profile" : analy2
+                "user_profile" : analy2,
+                 "current_stage" : "screening"
                 
                 
             }

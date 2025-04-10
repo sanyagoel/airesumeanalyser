@@ -21,7 +21,7 @@ class screenerAgent(baseAgent):
             
         )
     
-     def run(self,messages : list):
+     async def run(self,messages : list):
         
         content = messages[-1].get("content")
         
@@ -55,7 +55,8 @@ class screenerAgent(baseAgent):
         # print(response, 'SCREENING OUTPUT LETS SEE')
         
         return {
-            "screening_report" : response
+            "screening_report" : response,
+             "current_stage" : "recommendation"
         }
         
         

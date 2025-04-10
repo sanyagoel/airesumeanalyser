@@ -25,14 +25,14 @@ class Orchestrator(baseAgent):
         self.recommender = recommendationAgent()
         
     
-    def run(self, messages : list):
+    async def run(self, messages : list):
         
         print("Extracting information....")
-        data = self.extractor.run(messages)
+        data = await self.extractor.run(messages)
         
         print("Analysing information....")
         
-        analysis = self.analyzer.run([{
+        analysis = await self.analyzer.run([{
             
             "role" : "user",
             "content" : str(data["new_structure"])
@@ -40,7 +40,7 @@ class Orchestrator(baseAgent):
         
         print("Matching information...")
         
-        match = self.matcher.run([{
+        match = await self.matcher.run([{
             
             "role" :"user",
             "content": analysis["analysed_structure"]
@@ -50,7 +50,7 @@ class Orchestrator(baseAgent):
         
         print("Screening user...")
         
-        screen = self.screener.run([{
+        screen =await  self.screener.run([{
             
             "role" : "user",
             "content" : {
@@ -62,7 +62,7 @@ class Orchestrator(baseAgent):
         
         print("Making recommendations...")
         
-        recommend = self.recommender.run([
+        recommend = await self.recommender.run([
             
             {
                 "role" : "user",
@@ -76,6 +76,7 @@ class Orchestrator(baseAgent):
             "analysis": analysis,
             "matching": match,
             "screening": screen,
-            "recommendation": recommend
+            "recommendation": recommend,
+            "status" : "completed"
         }
         

@@ -16,7 +16,7 @@ class baseAgent():
         
         self.client = Swarm(client = self.ollamaclient)
         
-    def run(self,messages : list):
+    async def run(self,messages : list):
         
        
         raise NotImplementedError('Every subclass needs to implement this.')

@@ -27,7 +27,7 @@ Your task:
             
         )
     
-     def run(self, messages : list):
+     async def run(self, messages : list):
         
         content = messages[-1].get("content")[0].get("content")
         
@@ -36,5 +36,7 @@ Your task:
         response = self.query_ollama(content)
         
         return {
-            "final_recommendation" : response
+            "final_recommendation" : response,
+             "current_stage" : "completed",
+             "status" : "completed"
         }

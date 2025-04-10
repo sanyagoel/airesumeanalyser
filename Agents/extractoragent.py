@@ -20,7 +20,7 @@ class extractorAgent(baseAgent):
             
         )
     
-     def run(self, messages : list):
+     async def run(self, messages : list):
         
         """process resume and extract information"""
         
@@ -38,7 +38,8 @@ class extractorAgent(baseAgent):
         return {
             "old_structure" : data,
             "new_structure" : result,
-            "extraction" : "completed"
+            "extraction" : "completed",
+            "current_status" : "analysing"
         }
         
         

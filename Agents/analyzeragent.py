@@ -17,7 +17,7 @@ class analyser(baseAgent):
                 Format the output as structured data."""
         )
     
-     def run(self,messages : list):
+     async def run(self,messages : list):
         
         content = messages[-1].get("content")
         
@@ -51,7 +51,8 @@ class analyser(baseAgent):
         
         return {
             "analysed_structure" : response2,
-            "analysis" : "done"
+            "analysis" : "done",
+            "current_stage" : "matching"
         }
         
     
