@@ -65,55 +65,142 @@ if __name__ == "__main__":
   
         
     if st.session_state.page == 'Upload':
-        st.markdown("""Upload your resume here...""")
-        uploaded_file = st.file_uploader('Choose your .pdf file', type="pdf")
+        
+        upload_instruction = st.empty()
+        uploaded_file_p = st.empty()
+        status_placeholder = st.empty()
+        progress_bar_p = st.empty()
+        suc = st.empty()
+
+        upload_instruction.markdown("""Upload your resume here...""")
+        uploaded_file = uploaded_file_p.file_uploader('Choose your .pdf file', type="pdf")
         if uploaded_file is not None:
             with st.spinner("Saving uploaded file..."):
                 f = open('./pdfs/Resume3.pdf',"wb")
                 f.write(uploaded_file.getbuffer())
                 f.close()
-                st.success('Saved as resume3 in ./pdfs/resume3')
-            st.info('Your file has been saved succesfully!')
-            progress_bar = st.progress(0)
+                suc.success('Saved as resume3 in ./pdfs/resume3')
+            status_placeholder.info('Your file has been saved succesfully!')
+            progress_bar = progress_bar_p.progress(0)
             status_text = st.empty()
-            try:
-                progress_bar.progress(25)
-                status_text.text('Text extracted, now matching...')
-                result = asyncio.run(process_resume('./pdfs/Resume3.pdf'))
-                if result["status"] == 'completed':
+            progress_bar.progress(25)
+            status_text.text('Text extracted, now matching...')
+            result = asyncio.run(process_resume('./pdfs/Resume3.pdf'))
+            if result["status"] == 'completed':
                     progress_bar.progress(100)
                     status_text.text('Analysis complete!')
+                    upload_instruction.empty()
+                    uploaded_file_p.empty()
+                    status_text.empty()
+                    status_placeholder.empty()
+                    progress_bar_p.empty()
+                    suc.empty()
+                    
+                    
+                    
+                    if isinstance(result.get("analysis"), str):
+                        result["analysis"] = json.loads(result["analysis"])
+                        
+                    if isinstance(result["analysis"].get("analysed_structure"), str):
+                        result["analysis"]["analysed_structure"] = json.loads(result["analysis"]["analysed_structure"])
+
+
+                    tech_skills = result["analysis"]["analysed_structure"]["technical_skills"]
+                    skill_summary = "\n".join(f"• {skill}" for skill in tech_skills)
+
+                    yearsOfExp = result["analysis"]["analysed_structure"]["years_of_experience"]
+
+                    education = (
+                        result["analysis"]["analysed_structure"]["education"]["level"]
+                        + ": "
+                        + result["analysis"]["analysed_structure"]["education"]["field"]
+                    )
+
+                    key_achievements = "\n".join(
+                        f"• {achievement}" for achievement in result["analysis"]["analysed_structure"]["key_achievements"]
+                    )
+
+                    exp_level = result["analysis"]["analysed_structure"]["experience_level"]
+
+                    domain_expertise = "\n".join(
+                        f"• {domain}" for domain in result["analysis"]["analysed_structure"]["domain_expertise"]
+                    )
+                    
+                    print("MATCHING DEBUG:", result["matching"])
+
+                    matched_jobs = result["matching"]["matched_jobs"]
+                    html = ""
+
+                    if matched_jobs:
+                        html = """<table style="width:100%; border-collapse: collapse; font-size: 16px;">
+<thead>
+<tr style="font-weight:bold; text-align:left;">
+<td>Company</td>
+<td>Job Role</td>
+<td>Location</td>
+<td>Salary</td>
+<td>Match Score</td>
+<td>Responsibilities</td>
+</tr>
+</thead>
+<tbody>
+                        """
+
+                        for job in matched_jobs:
+                            html += f"""<tr>
+<td>{job['company']}</td>
+<td>{job['job_role']}</td>
+<td>{job['location']}</td>
+<td>{job['salary_range']}</td>
+<td>{round(job['match_score'], 2)}%</td>
+<td>{'<br>'.join(job['key_responsiblities'])}</td>
+</tr>
+                        """
+
+                        html += "</tbody></table>"
+                    
+                    screeningReport = result["screening"]["screening_report"][0]["content"].replace('\n','<br>')
+                    
+                    recommendations = result["recommendation"]["final_recommendation"][0]["content"].replace('\n','<br>')
+
+
                     tab1, tab2, tab3,tab4 = st.tabs(["Information", "Matching", "Screening","Recommendation"])
                     with tab1:
                         st.header("Information On The Resume")
                         st.markdown(f"""
+                                                                        
+                                   <b><h4> Technical Skills- </h4></b>
+                                    {skill_summary}
+                                    <b><h4> Years Of Experience : {yearsOfExp} </h4></b>
+                                    <b><h4> Education- </h4></b>
+                                    {education}
+                                    <b><h4> Key Achievements </h4></b>
+                                    {key_achievements}
+                                    <b><h4> Experience Level </h4></b>
+                                    {exp_level}
+                                    <b><h4> Domain Expertise- </h4></b>
+                                    {domain_expertise}
                                     
-                                    {result["analysis"]}    
-                                    
-                                    """)
+                                    """,unsafe_allow_html=True)
                     with tab2:
                         st.header("Matches with Potential Jobs")
-                        st.markdown(f"""
-                                    
-                                    {result["matching"]}    
-                                    
-                                    """)
+                        st.markdown(html, unsafe_allow_html=True)
                     with tab3:
                         st.header("Screening Information")
                         st.markdown(f"""
+                                     <div style='font-size:16px; line-height:1.6'>
+                                    {screeningReport}
+                                    </div>    
                                     
-                                    {result["screening"]}    
-                                    
-                                    """)
+                                    """,unsafe_allow_html=True)
                     with tab4:
                         st.header("Recommendations")
                         st.markdown(f"""
-                                    
-                                    {result["recommendation"]}    
-                                    
-                                    """)
-            except Exception as e:
-                st.error(e)
+                                    <div style='font-size:16px; line-height:1.6'>
+                                    {recommendations}    
+                                    </div>
+                                    """,unsafe_allow_html = True)
+           
 
             
    

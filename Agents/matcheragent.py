@@ -33,14 +33,24 @@ class matcherAgent(baseAgent):
         
         # print("ANALYSED CONTENT AAA", analy2)
         
-        jobs = jobs_collection.find({"experience" : {"$lte" : analy2.get("years_of_experience")}, "expected_technical_skills" :{ "$in" : analy2.get("technical_skills")}})
+        jobs = list(jobs_collection.find({"experience" : {"$lte" : analy2.get("years_of_experience")}, "expected_technical_skills" :{ "$in" : analy2.get("technical_skills")}}))
+        
+        # print(jobs , "JOBS FROM Db")
+        
+        # for job in jobs:
+        #     print(job)
         
         scored_jobs = []
         
+        print(analy2.get("technical_skills"), "USER'S SKILLS")
+        print(len(jobs))
+
         for job in jobs:
             required_skills = set(job["expected_technical_skills"])
             actual_skills = set(analy2.get("technical_skills"))
             matched_skills = len(required_skills.intersection(actual_skills))
+            print(job["expected_technical_skills"], "EXPECTED SKILLS")
+            # print(matched_skills , "MATCHED SKILLS FOR JOB", job["company"])
             matched_score = (matched_skills/len(required_skills))*100
             if matched_score > 30:
                 new_job = {
